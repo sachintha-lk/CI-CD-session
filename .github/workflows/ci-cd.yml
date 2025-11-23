@@ -16,7 +16,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build container image
-        run: docker build -t $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7) .
+        run: |
+          docker build -t $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7) \
+                       -t $(echo $REGISTRY)/$(echo $IMAGE_NAME):latest .
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -27,8 +29,25 @@ jobs:
         run: doctl registry login --expiry-seconds 600
 
       - name: Push image to DigitalOcean Container Registry
-        run: docker push $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
+        run: |
+          docker push $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
+          docker push $(echo $REGISTRY)/$(echo $IMAGE_NAME):latest
 
-      # Optional: Update App Platform to use the new image
-      # - name: Update App Platform
-      #   run: doctl apps update <APP_ID> --spec .do/app.yaml
+      - name: Deploy to DigitalOcean App Platform
+        run: |
+          APP_NAME="spring-boot-demo"
+          TAG=$(echo $GITHUB_SHA | head -c7)
+
+          # Update the tag in app.yaml to use the specific SHA
+          sed -i "s/tag: latest/tag: $TAG/" .do/app.yaml
+
+          # Check if app exists
+          APP_ID=$(doctl apps list --format ID --no-header --filter Name=$APP_NAME)
+          
+          if [ -z "$APP_ID" ]; then
+            echo "Creating new app..."
+            doctl apps create --spec .do/app.yaml
+          else
+            echo "Updating existing app $APP_ID..."
+            doctl apps update $APP_ID --spec .do/app.yaml
+          fi
