@@ -12,7 +12,7 @@ public class HelloController {
     @GetMapping("/")
     public Map<String, Object> hello() {
         Map<String, Object> response = new HashMap<>();
-        response.put("message", "Hello from DigitalOcean App Platform (Spring Boot)!");
+        response.put("message", "Hello from DigitalOcean App Platform (Spring Boot)! Hi");
         response.put("timestamp", new Date());
         return response;
     }

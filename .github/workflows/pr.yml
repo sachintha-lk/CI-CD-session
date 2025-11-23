@@ -1,0 +1,49 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+          
+      - name: Run Unit Tests
+        id: tests
+        run: mvn test
+
+      - name: Comment on PR
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { repo, owner } = context.repo;
+            const result = '${{ steps.tests.outcome }}';
+            const emoji = result === 'success' ? '✅' : '❌';
+            
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: context.issue.number,
+              body: `### PR Check Results
+            ${emoji} **Unit Tests**: ${result.toUpperCase()}
+            
+            <details>
+            <summary>View Details</summary>
+            
+            See the [Action logs](https://github.com/${owner}/${repo}/actions/runs/${context.runId}) for more info.
+            </details>`
+            });
