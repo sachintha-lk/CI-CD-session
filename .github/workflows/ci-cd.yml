@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 env:
-  REGISTRY: registry.digitalocean.com/my-registry # Replace with your registry name
+  REGISTRY: registry.digitalocean.com/demo-cicd-12ds3df # Replace with your registry name
   IMAGE_NAME: spring-boot-demo
 
 jobs:
