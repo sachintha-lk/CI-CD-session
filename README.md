@@ -43,6 +43,16 @@ You can deploy using the `doctl` CLI or the DigitalOcean Control Panel.
 1.  Update `.do/app.yaml` with your specific details.
 2.  Run: `doctl apps create --spec .do/app.yaml`
 
+### 5. Demo PR Checks
+
+1.  Create a new branch: `git checkout -b feature/new-message`
+2.  Change the message in `HelloController.java`.
+3.  Push the branch and open a Pull Request.
+4.  The `PR Checks` workflow will run:
+    *   It executes `mvn test`.
+    *   It posts a comment on the PR with the result (✅ or ❌).
+5.  **To demo a failure**: Change the message in the controller but *don't* update the test in `HelloControllerTest.java`. The test will fail, and the bot will comment with ❌.
+
 ## Local Development
 
 1.  Build locally: `mvn clean package`
