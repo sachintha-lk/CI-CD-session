@@ -39,10 +39,10 @@ jobs:
           TAG=$(echo $GITHUB_SHA | head -c7)
 
           # Update the tag in app.yaml to use the specific SHA
-          sed -i "s/tag: latest/tag: $TAG/" .do/app.yaml
+          sed -i "s/tag: latest/tag: \"$TAG\"/" .do/app.yaml
 
           # Check if app exists
-          APP_ID=$(doctl apps list --format ID --no-header --filter Name=$APP_NAME)
+          APP_ID=$(doctl apps list --format "ID,Spec.Name" --no-header | awk -v app="$APP_NAME" '$2 == app {print $1}')
           
           if [ -z "$APP_ID" ]; then
             echo "Creating new app..."
