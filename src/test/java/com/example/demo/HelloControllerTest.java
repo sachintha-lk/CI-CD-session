@@ -21,7 +21,7 @@ public class HelloControllerTest {
     public void shouldReturnHelloMessage() throws Exception {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Hello from DigitalOcean App Platform (Spring Boot)! Hi"));
+                .andExpect(jsonPath("$.message").value("Hello from DigitalOcean App Platform (Spring Boot)! Hi hi"));
     }
 
     @Test
