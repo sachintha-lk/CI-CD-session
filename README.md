@@ -53,6 +53,20 @@ You can deploy using the `doctl` CLI or the DigitalOcean Control Panel.
     *   It posts a comment on the PR with the result (✅ or ❌).
 5.  **To demo a failure**: Change the message in the controller but *don't* update the test in `HelloControllerTest.java`. The test will fail, and the bot will comment with ❌.
 
+### 6. Enforce Checks (Branch Protection)
+
+To ensure code cannot be merged unless the tests pass:
+
+1.  Go to your GitHub Repository **Settings**.
+2.  Click on **Branches** in the left sidebar.
+3.  Click **Add branch protection rule**.
+4.  **Branch name pattern**: `main`.
+5.  Check **Require status checks to pass before merging**.
+6.  Search for and select `test` (this matches the job name in `pr.yml`).
+7.  Click **Create**.
+
+Now, if the "PR Checks" workflow fails, the "Merge" button will be disabled.
+
 ## Local Development
 
 1.  Build locally: `mvn clean package`
